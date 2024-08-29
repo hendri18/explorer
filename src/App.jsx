@@ -11,7 +11,8 @@ class App extends React.Component {
                 <Routes>
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
-                    <Route path="/" element={<ProtectedRoute><ExpolorerPage /></ProtectedRoute>} />
+                    {/* <Route path="/folder/:folderName" element={<ProtectedRoute><ExpolorerPage /></ProtectedRoute>} /> */}
+                    <Route path="*" element={<ProtectedRoute><ExpolorerPage /></ProtectedRoute>} />
                 </Routes>
             </BrowserRouter>
         )

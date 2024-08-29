@@ -39,12 +39,31 @@ const auth = {
             return null;
         }
     },
-    logout: () => {
-        storage.remove("user")
+    logout: async () => {
+        try {
+            const token = auth.getToken();
+            if (!token) return false;
+            const config = {
+                headers: { Authorization: `Bearer ${token}` }
+            };
+            const result = await axios.post(import.meta.env.VITE_BASE_API_URL+'/logout', {}, config);
+            storage.remove("user")
+            return null;
+        } catch (error) {
+            alert(error.response.data ? error.response.data.message : error)
+            console.error(error)
+            return null;
+        }
+        
     },
     userData: () => {
         const user = storage.get("user");
         return user;
+    },
+    getToken: () => {
+        const user = storage.get("user");
+        if (!user) return null;
+        return user.access_token;
     }
 }
 
