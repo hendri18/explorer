@@ -19,6 +19,9 @@ const api = {
         } catch (error) {
             alert(error.response.data ? error.response.data.message : error)
             console.error(error)
+            if (error.status == 401) {
+                storage.remove("user")
+            }
             return null;
         }
     },
@@ -41,6 +44,9 @@ const api = {
         } catch (error) {
             alert(error.response.data ? error.response.data.message : error)
             console.error(error)
+            if (error.status == 401) {
+                storage.remove("user")
+            }
             return null;
         }
     },
@@ -62,6 +68,9 @@ const api = {
         } catch (error) {
             alert(error.response.data ? error.response.data.message : error)
             console.error(error)
+            if (error.status == 401) {
+                storage.remove("user")
+            }
             return null;
         }
     },
@@ -80,6 +89,9 @@ const api = {
         } catch (error) {
             alert(error.response.data ? error.response.data.message : error)
             console.error(error)
+            if (error.status == 401) {
+                storage.remove("user")
+            }
             return null;
         }
     },
@@ -98,6 +110,9 @@ const api = {
         } catch (error) {
             alert(error.response.data ? error.response.data.message : error)
             console.error(error)
+            if (error.status == 401) {
+                storage.remove("user")
+            }
             return null;
         }
     },
@@ -119,6 +134,9 @@ const api = {
         } catch (error) {
             alert(error.response.data ? error.response.data.message : error)
             console.error(error)
+            if (error.status == 401) {
+                storage.remove("user")
+            }
             return null;
         }
     },
@@ -140,6 +158,9 @@ const api = {
         } catch (error) {
             alert(error.response.data ? error.response.data.message : error)
             console.error(error)
+            if (error.status == 401) {
+                storage.remove("user")
+            }
             return null;
         }
     },

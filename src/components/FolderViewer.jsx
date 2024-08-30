@@ -1,7 +1,17 @@
 
 import { useParams, Link, Routes, Route } from "react-router-dom";
 import { ContextMenuTrigger, ContextMenu, ContextMenuItem } from 'rctx-contextmenu';
+import moment from "moment";
 
+function formatBytes(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    const formattedSize = parseFloat((bytes / Math.pow(1024, i)).toFixed(2));
+    
+    return `${formattedSize} ${sizes[i]}`;
+}
 const FolderViewer = ({ rootFolders, openModalAdd, openModalRename, openModalDelete, handleUploadFile }) => {
     
     let { "*": splat } = useParams();
@@ -39,7 +49,7 @@ const FolderViewer = ({ rootFolders, openModalAdd, openModalRename, openModalDel
     const renderSubFolders = (folder, currentPath) => (
         <div className="row g-0">
         {folder.sub_folders.map((subFolder) => (
-            <div className="col-2 p-2" key={subFolder.id}>
+            <div className="col-6 col-md-2 p-2" key={subFolder.id}>
                 <ContextMenuTrigger id={`ctxm-folder-${subFolder.id}`}>
                     <Link to={`${currentPath}/${subFolder.name}`} className="folder">
                         <div><i className="bi bi-folder"></i></div>
@@ -50,12 +60,14 @@ const FolderViewer = ({ rootFolders, openModalAdd, openModalRename, openModalDel
                     <ContextMenuItem preventClose={true} className="text-center fw-bold folder-name">{subFolder.name}</ContextMenuItem>
                     <ContextMenuItem onClick={() => openModalRename(subFolder.id, subFolder.name, 'folder')}><i className="bi bi-pencil"></i> Rename</ContextMenuItem>
                     <ContextMenuItem onClick={() => openModalDelete(subFolder.id, subFolder.name, 'folder')}><i className="bi bi-trash"></i> Delete</ContextMenuItem>
+                    <ContextMenuItem preventClose={true} disabled className="fw-bold folder-name"><i className="bi bi-clock"></i> {moment(subFolder.created_at).local().format('YYYY-MM-DD HH:mm:ss')}</ContextMenuItem>
+                    <ContextMenuItem preventClose={true} disabled className="fw-bold folder-name"><i className="bi bi-arrow-clockwise"></i> {moment(subFolder.updated_at).local().format('YYYY-MM-DD HH:mm:ss')}</ContextMenuItem>
                 </ContextMenu>
             </div>
         ))}
         {(folder.files && folder.files.length) > 0 && 
             folder.files.map((file) => ( 
-                <div className="col-2 p-2" key={file.id}>
+                <div className="col-6 col-md-2 p-2" key={file.id}>
                     <ContextMenuTrigger id={`ctxm-file-${file.id}`}>
                         <a href={file.file_url} className="folder" target="_blank">
                             <div>
@@ -69,7 +81,9 @@ const FolderViewer = ({ rootFolders, openModalAdd, openModalRename, openModalDel
                         <ContextMenuItem preventClose={true} className="text-center fw-bold folder-name">{file.file_name}</ContextMenuItem>
                         <ContextMenuItem onClick={() => openModalRename(file.id, file.file_name, 'file')}><i className="bi bi-pencil"></i> Rename</ContextMenuItem>
                         <ContextMenuItem onClick={() => openModalDelete(file.id, file.file_name, 'file')}><i className="bi bi-trash"></i> Delete</ContextMenuItem>
-                        <ContextMenuItem preventClose={true} className="text-center fw-bold folder-name">Created At: {file.created_at}</ContextMenuItem>
+                        <ContextMenuItem preventClose={true} disabled className="fw-bold folder-name"><i className="bi bi-clock"></i> {moment(file.created_at).local().format('YYYY-MM-DD HH:mm:ss')}</ContextMenuItem>
+                        <ContextMenuItem preventClose={true} disabled className="fw-bold folder-name"><i className="bi bi-arrow-clockwise"></i> {moment(file.updated_at).local().format('YYYY-MM-DD HH:mm:ss')}</ContextMenuItem>
+                        <ContextMenuItem preventClose={true} disabled className="fw-bold folder-name"> {formatBytes(file.size)}</ContextMenuItem>
                     </ContextMenu>
                 </div>
             ))
