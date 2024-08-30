@@ -13,7 +13,7 @@ const auth = {
                 const user = storage.store("user", result.data.data);
                 return user;
             }
-            return result;
+            return null;
         } catch (error) {
             alert(error.response.data ? error.response.data.message : error)
             console.error(error)
@@ -32,7 +32,7 @@ const auth = {
                 const user = storage.store("user", result.data.data);
                 return user;
             }
-            return result;
+            return null;
         } catch (error) {
             alert(error.response.data ? error.response.data.message : error)
             console.error(error)

@@ -22,25 +22,127 @@ const api = {
             return null;
         }
     },
-    register: async (name, email, password) => {
+    createFolder: async (name, parent_id = null) => {
+        const token = auth.getToken();
+        if (!token) return true;
+        const config = {
+            headers: { Authorization: `Bearer ${token}` }
+        };
         const payload = {
             name: name,
-            email: email,
-            password: password,
+            parent_id: parent_id,
         }
         try {
-            const result = await axios.post(import.meta.env.VITE_BASE_API_URL+'/register', payload);
+            const result = await axios.post(import.meta.env.VITE_BASE_API_URL+'/folders', payload, config);
             if (result.data.status === 'success') {
-                const user = storage.store("user", result.data.data);
-                return user;
+                return true;
             }
-            return result;
+            return null;
         } catch (error) {
             alert(error.response.data ? error.response.data.message : error)
             console.error(error)
             return null;
         }
-    }
+    },
+    renameFolder: async (id, name) => {
+        const token = auth.getToken();
+        if (!token) return true;
+        const config = {
+            headers: { Authorization: `Bearer ${token}` }
+        };
+        const payload = {
+            name: name,
+        }
+        try {
+            const result = await axios.put(import.meta.env.VITE_BASE_API_URL+'/folders/'+id, payload, config);
+            if (result.data.status === 'success') {
+                return true;
+            }
+            return null;
+        } catch (error) {
+            alert(error.response.data ? error.response.data.message : error)
+            console.error(error)
+            return null;
+        }
+    },
+    deleteFolder: async (id) => {
+        const token = auth.getToken();
+        if (!token) return true;
+        const config = {
+            headers: { Authorization: `Bearer ${token}` }
+        };
+        try {
+            const result = await axios.delete(import.meta.env.VITE_BASE_API_URL+'/folders/'+id, config);
+            if (result.data.status === 'success') {
+                return true;
+            }
+            return null;
+        } catch (error) {
+            alert(error.response.data ? error.response.data.message : error)
+            console.error(error)
+            return null;
+        }
+    },
+    uploadFile: async (payload) => {
+        const token = auth.getToken();
+        if (!token) return true;
+        const config = {
+            headers: { Authorization: `Bearer ${token}` }
+        };
+        try {
+            const result = await axios.post(import.meta.env.VITE_BASE_API_URL+'/files', payload, config);
+            if (result.data.status === 'success') {
+                return true;
+            }
+            return null;
+        } catch (error) {
+            alert(error.response.data ? error.response.data.message : error)
+            console.error(error)
+            return null;
+        }
+    },
+    renameFile: async (id, name) => {
+        const token = auth.getToken();
+        if (!token) return true;
+        const config = {
+            headers: { Authorization: `Bearer ${token}` }
+        };
+        const payload = {
+            file_name: name,
+        }
+        try {
+            const result = await axios.put(import.meta.env.VITE_BASE_API_URL+'/files/'+id, payload, config);
+            if (result.data.status === 'success') {
+                return true;
+            }
+            return null;
+        } catch (error) {
+            alert(error.response.data ? error.response.data.message : error)
+            console.error(error)
+            return null;
+        }
+    },
+    deleteFile: async (id) => {
+        const token = auth.getToken();
+        if (!token) return true;
+        const config = {
+            headers: { 
+                Authorization: `Bearer ${token}`, 
+                'Content-Type': 'multipart/form-data'
+            }
+        };
+        try {
+            const result = await axios.delete(import.meta.env.VITE_BASE_API_URL+'/files/'+id, config);
+            if (result.data.status === 'success') {
+                return true;
+            }
+            return null;
+        } catch (error) {
+            alert(error.response.data ? error.response.data.message : error)
+            console.error(error)
+            return null;
+        }
+    },
 }
 
 export default api;

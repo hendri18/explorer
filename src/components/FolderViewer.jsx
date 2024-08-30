@@ -1,7 +1,8 @@
 
 import { useParams, Link, Routes, Route } from "react-router-dom";
+import { ContextMenuTrigger, ContextMenu, ContextMenuItem } from 'rctx-contextmenu';
 
-const FolderViewer = ({ rootFolders }) => {
+const FolderViewer = ({ rootFolders, openModalAdd, openModalRename, openModalDelete, handleUploadFile }) => {
     
     let { "*": splat } = useParams();
     const folderPath = splat.split('/');
@@ -39,23 +40,37 @@ const FolderViewer = ({ rootFolders }) => {
         <div className="row g-0">
         {folder.sub_folders.map((subFolder) => (
             <div className="col-2 p-2" key={subFolder.id}>
-                <Link to={`${currentPath}/${subFolder.name}`} className="folder">
-                    <div><i className="bi bi-folder"></i></div>
-                    <div className="folder-name">{subFolder.name}</div>
-                </Link>
+                <ContextMenuTrigger id={`ctxm-folder-${subFolder.id}`}>
+                    <Link to={`${currentPath}/${subFolder.name}`} className="folder">
+                        <div><i className="bi bi-folder"></i></div>
+                        <div className="folder-name">{subFolder.name}</div>
+                    </Link>
+                </ContextMenuTrigger>
+                <ContextMenu id={`ctxm-folder-${subFolder.id}`}>
+                    <ContextMenuItem preventClose={true} className="text-center fw-bold folder-name">{subFolder.name}</ContextMenuItem>
+                    <ContextMenuItem onClick={() => openModalRename(subFolder.id, subFolder.name, 'folder')}><i className="bi bi-pencil"></i> Rename</ContextMenuItem>
+                    <ContextMenuItem onClick={() => openModalDelete(subFolder.id, subFolder.name, 'folder')}><i className="bi bi-trash"></i> Delete</ContextMenuItem>
+                </ContextMenu>
             </div>
         ))}
         {(folder.files && folder.files.length) > 0 && 
             folder.files.map((file) => ( 
                 <div className="col-2 p-2" key={file.id}>
-                    <a href={file.file_url} className="folder" target="_blank">
-                        <div>
-                            {isImageFile ? <img src={file.file_url} alt="" style={{height: 57}} />: 
-                            <i className="bi bi-file-earmark"></i>}
-                            
-                        </div>
-                        <div className="folder-name">{file.file_name}</div>
-                    </a>
+                    <ContextMenuTrigger id={`ctxm-file-${file.id}`}>
+                        <a href={file.file_url} className="folder" target="_blank">
+                            <div>
+                                {isImageFile(file.file_name) ? <img src={file.file_url} alt="" style={{height: 72}} />: 
+                                <i className="bi bi-file-earmark"></i>}
+                            </div>
+                            <div className="folder-name">{file.file_name}</div>
+                        </a>
+                    </ContextMenuTrigger>
+                    <ContextMenu id={`ctxm-file-${file.id}`}>
+                        <ContextMenuItem preventClose={true} className="text-center fw-bold folder-name">{file.file_name}</ContextMenuItem>
+                        <ContextMenuItem onClick={() => openModalRename(file.id, file.file_name, 'file')}><i className="bi bi-pencil"></i> Rename</ContextMenuItem>
+                        <ContextMenuItem onClick={() => openModalDelete(file.id, file.file_name, 'file')}><i className="bi bi-trash"></i> Delete</ContextMenuItem>
+                        <ContextMenuItem preventClose={true} className="text-center fw-bold folder-name">Created At: {file.created_at}</ContextMenuItem>
+                    </ContextMenu>
                 </div>
             ))
         }
@@ -64,17 +79,30 @@ const FolderViewer = ({ rootFolders }) => {
     let url = '/folder';
     return (
         <div className="file-viewer">
-            <nav aria-label="breadcrumb">
-                <ol className="breadcrumb">
-                    {folderPath.map((fp,i) => {
-                        const active = i == folderPath.length -1;
-                        url += '/'+fp;
-                        return (
-                            <li key={i} className={`breadcrumb-item ${active ? 'active' : ''}`}>{active ? fp : <Link to={url}>{fp}</Link>}</li>
-                        )
-                    })}
-                </ol>
-            </nav>
+            <div className="row">
+                <div className="col-md-10">
+                    <nav aria-label="breadcrumb">
+                        <ol className="breadcrumb">
+                            {folderPath.map((fp,i) => {
+                                const active = i == folderPath.length -1;
+                                url += '/'+fp;
+                                return (
+                                    <li key={i} className={`breadcrumb-item ${active ? 'active' : ''}`}>{active ? fp : <Link to={url}>{fp}</Link>}</li>
+                                )
+                            })}
+                        </ol>
+                    </nav>
+                </div>
+                <div className="col-md-2">
+                    <div className="text-end">
+                        <div className="btn-group me-2" role="group" aria-label="First group">
+                            <button type="button" onClick={() => openModalAdd(folder.id, 'folder')} className="btn btn-outline-dark"><i className="bi bi-folder-plus"></i></button>
+                            <button type="button" onClick={() => openModalAdd(folder.id, 'file')} className="btn btn-outline-dark"><label htmlFor="upload"><i className="bi bi-upload"></i></label></button>
+                        </div>
+                        <input type="file" id="upload" hidden onChange={(e) => {handleUploadFile(e, folder.id); e.target.value=null}}/>
+                    </div>
+                </div>
+            </div>
             {renderSubFolders(folder, `/folder/${splat}`)}
         </div>
     );
